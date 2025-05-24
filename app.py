@@ -34,11 +34,11 @@ def get_car(car_id: int):
 
 @app.post("/cars", response_model=Car, status_code=status.HTTP_201_CREATED)
 def create_car(car_data: CarCreate):
-    return repo.create(car_data.dict())
+    return repo.create(car_data.model_dump())
 
 @app.put("/cars/{car_id}", response_model=Car)
 def update_car(car_id: int, car_data: CarUpdate):
-    car = repo.update(car_id, car_data.dict(exclude_unset=True))
+    car = repo.update(car_id, car_data.model_dump(exclude_unset=True))
     if not car:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -135,7 +135,7 @@
                     <td>${car.brand}</td>
                     <td>${car.model}</td>
                     <td>${car.year}</td>
-                    <td>$${car.price.toLocaleString()}</td>
+                    <td>${car.price.toLocaleString()}&#8381;</td>
                     <td>${car.color || '-'}</td>
                     <td class="actions">
                         <button onclick="editCar(${car.id})">Edit</button>
