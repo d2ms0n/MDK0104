@@ -14,3 +14,4 @@ class CarUpdate(BaseModel):
     year: Optional[int] = None
     price: Optional[float] = None
     color: Optional[str] = None
+

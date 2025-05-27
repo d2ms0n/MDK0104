@@ -1,37 +1,57 @@
-from typing import List, Optional
+from sqlalchemy.orm import Session
 from models import Car
+from database import DBCar, get_db
+from typing import List, Optional
+from datetime import datetime
 
 class CarRepository:
-    def __init__(self):
-        self._cars: List[Car] = []
-        self._next_id = 1
+    def __init__(self, db: Session):
+        self.db = db
 
     def get_all(self) -> List[Car]:
-        return self._cars.copy()
+        db_cars = self.db.query(DBCar).all()
+        return [self._convert_to_pydantic(car) for car in db_cars]
 
     def get_by_id(self, car_id: int) -> Optional[Car]:
-        for car in self._cars:
-            if car.id == car_id:
-                return car
-        return None
+        db_car = self.db.query(DBCar).filter(DBCar.id == car_id).first()
+        return self._convert_to_pydantic(db_car) if db_car else None
 
     def create(self, car_data: dict) -> Car:
-        car = Car(id=self._next_id, **car_data)
-        self._cars.append(car)
-        self._next_id += 1
-        return car
+        db_car = DBCar(**car_data)
+        self.db.add(db_car)
+        self.db.commit()
+        self.db.refresh(db_car)
+        return self._convert_to_pydantic(db_car)
 
     def update(self, car_id: int, car_data: dict) -> Optional[Car]:
-        for i, car in enumerate(self._cars):
-            if car.id == car_id:
-                updated_car = car.copy(update=car_data)
-                self._cars[i] = updated_car
-                return updated_car
-        return None
+        db_car = self.db.query(DBCar).filter(DBCar.id == car_id).first()
+        if not db_car:
+            return None
+            
+        for key, value in car_data.items():
+            setattr(db_car, key, value)
+            
+        self.db.commit()
+        self.db.refresh(db_car)
+        return self._convert_to_pydantic(db_car)
 
     def delete(self, car_id: int) -> bool:
-        for i, car in enumerate(self._cars):
-            if car.id == car_id:
-                self._cars.pop(i)
-                return True
-        return False
+        db_car = self.db.query(DBCar).filter(DBCar.id == car_id).first()
+        if not db_car:
+            return False
+            
+        self.db.delete(db_car)
+        self.db.commit()
+        return True
+
+    def _convert_to_pydantic(self, db_car: DBCar) -> Car:
+        return Car(
+            id=db_car.id,
+            brand=db_car.brand,
+            model=db_car.model,
+            year=db_car.year,
+            price=db_car.price,
+            color=db_car.color,
+            created_at=db_car.created_at,
+            updated_at=db_car.updated_at
+        )
