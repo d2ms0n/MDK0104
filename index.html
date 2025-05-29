@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -9,91 +7,362 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
         }
+
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         form {
             margin: 20px 0;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
-        input, button {
+
+        input, button, select {
             padding: 8px;
             margin: 5px 0;
             width: 100%;
             box-sizing: border-box;
         }
+
         button {
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #45a049;
-        }
+
+            button:hover {
+                background-color: #45a049;
+            }
+
         .actions button {
             margin: 2px;
             width: auto;
         }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f2f2f2;
+            margin-right: 5px;
+        }
+
+            .tab.active {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            float: right;
+        }
+
+            .logout-btn:hover {
+                background-color: #d32f2f;
+            }
+
+        .error-message {
+            color: red;
+            margin: 5px 0;
+        }
+
+        .user-info {
+            float: right;
+            margin-right: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <h1>Car Shop</h1>
-    
-    <h2>Add/Edit Car</h2>
-    <form id="carForm">
-        <input type="hidden" id="carId">
-        <input type="text" id="brand" placeholder="Brand" required>
-        <input type="text" id="model" placeholder="Model" required>
-        <input type="number" id="year" placeholder="Year" required>
-        <input type="number" id="price" placeholder="Price" step="0.01" required>
-        <input type="text" id="color" placeholder="Color (optional)">
-        <button type="submit">Save</button>
-    </form>
-    
-    <h2>Car List</h2>
-    <table id="carsTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Brand</th>
-                <th>Model</th>
-                <th>Year</th>
-                <th>Price</th>
-                <th>Color</th>
-                <th class="actions">Actions</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div id="loginSection" style="display: none;">
+        <h1>Login</h1>
+        <form id="loginForm" class="login-form">
+            <input type="text" id="username" placeholder="Логин" required>
+            <input type="password" id="password" placeholder="Пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+    </div>
+
+    <div id="appContent" style="display: none;">
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+        <div class="user-info" id="userInfo"></div>
+        <h1>Car Shop</h1>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="cars">Cars</div>
+            <div class="tab" data-tab="users">Users</div>
+        </div>
+
+        <!-- Cars Tab -->
+        <div id="carsTab" class="tab-content active">
+            <h2>Add/Edit Car</h2>
+            <form id="carForm">
+                <input type="hidden" id="carId">
+                <input type="text" id="brand" placeholder="Бренд" required>
+                <input type="text" id="model" placeholder="Модель" required>
+                <input type="number" id="year" placeholder="Год" required>
+                <input type="number" id="price" placeholder="Цена" step="0.01" required>
+                <input type="text" id="color" placeholder="Цвет">
+                <button type="submit">Save</button>
+            </form>
+
+            <h2>Car List</h2>
+            <table id="carsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Бренд</th>
+                        <th>Модель</th>
+                        <th>Год</th>
+                        <th>Цена</th>
+                        <th>Цвет</th>
+                        <th class="actions">Редактировать</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="usersTab" class="tab-content">
+            <h2>Add/Edit User</h2>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <input type="text" id="userUsername" placeholder="Логин" required>
+                <input type="email" id="userEmail" placeholder="Email" required>
+                <input type="text" id="userFullName" placeholder="Имя" required>
+                <input type="password" id="userPassword" placeholder="Пароль">
+                <select id="userRole" required>
+                    <option value="buyer" selected>Покупатель</option>
+                    <option value="manager">Менеджер</option>
+                    <option value="admin">Администратор</option>
+                </select>
+
+
+
+                <button type="submit">Сохранить</button>
+            </form>
+
+            <h2>User List</h2>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Логин</th>
+                        <th>Email</th>
+                        <th>Имя</th>
+                        <th>Роль</th>
+                        <th class="actions">Редактировать</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 
     <script>
-        const API_URL = 'http://localhost:8000/cars';
+        const CARS_API_URL = 'http://localhost:8000/cars';
+        const USERS_API_URL = 'http://localhost:8000/users';
+        const AUTH_API_URL = 'http://localhost:8000/auth';
         let currentCarId = null;
+        let currentUserId = null;
+        let currentToken = null;
 
-        // Load cars when page loads
-        document.addEventListener('DOMContentLoaded', loadCars);
 
-        // Form submit handler
-        document.getElementById('carForm').addEventListener('submit', async function(e) {
+        document.addEventListener('DOMContentLoaded', () => {
+            currentToken = localStorage.getItem('token');
+            if (currentToken) {
+                showAppContent();
+                loadCars();
+            } else {
+                showLoginForm();
+            }
+        });
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${AUTH_API_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentToken = data.access_token;
+                    localStorage.setItem('token', currentToken);
+                    showAppContent();
+                    loadCars();
+                } else {
+                    const errorData = await response.json();
+                    showError('loginForm', errorData.detail || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('loginForm', 'Login error');
+            }
+        });
+
+
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            currentToken = null;
+            localStorage.removeItem('token');
+            showLoginForm();
+        });
+
+
+
+
+        function activateTab(tabName) {
+
+            const tab = document.querySelector(`.tab[data-tab="${tabName}"]`);
+            const tabContent = document.getElementById(`${tabName}Tab`);
+
+            if (!tab || !tabContent) {
+                return false;
+            }
+
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+
+            tab.classList.add('active');
+            tabContent.classList.add('active');
+
+
+            if (tabName === 'users') {
+                loadUsers();
+            } else if (tabName === 'cars') {
+                loadCars();
+            }
+
+            return true;
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultTab = 'cars';
+            const savedTab = localStorage.getItem('activeTab');
+
+
+            if (savedTab && activateTab(savedTab)) {
+            } else {
+                activateTab(defaultTab);
+                if (savedTab) {
+                    localStorage.removeItem('activeTab');
+                }
+            }
+
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    const tabName = this.dataset.tab;
+                    if (activateTab(tabName)) {
+                        localStorage.setItem('activeTab', tabName);
+                    }
+                });
+            });
+        });
+
+
+
+
+        function showLoginForm() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('appContent').style.display = 'none';
+        }
+
+        function showAppContent() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            loadUserInfo();
+        }
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetch(`${AUTH_API_URL}/me`, {
+                    headers: {
+                        'Authorization': `bearer ${currentToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('userInfo').textContent =
+                        `${user.username} (${user.role})`;
+                }
+            } catch (error) {
+                console.error('Error load user', error);
+            }
+        }
+
+        // Show error message
+        function showError(formId, message) {
+            const form = document.getElementById(formId);
+            let errorElement = form.querySelector('.error-message');
+
+            if (!errorElement) {
+                errorElement = document.createElement('div');
+                errorElement.className = 'error-message';
+                form.prepend(errorElement);
+            }
+
+            errorElement.textContent = message;
+            setTimeout(() => errorElement.textContent = '', 3000);
+        }
+
+        // ===== CAR FUNCTIONS =====
+
+        document.getElementById('carForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
             const carData = {
                 brand: document.getElementById('brand').value,
                 model: document.getElementById('model').value,
@@ -107,49 +376,48 @@
             } else {
                 await createCar(carData);
             }
-            
-            resetForm();
-            await loadCars();
+
+            location.reload(true);
         });
 
-        // Load all cars
+
+
+
         async function loadCars() {
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(CARS_API_URL);
                 const cars = await response.json();
                 renderCars(cars);
             } catch (error) {
-                console.error('Error loading cars:', error);
+                console.error('ошибка загрузки автомобиля:', error);
             }
         }
 
-        // Render cars to table
         function renderCars(cars) {
             const tbody = document.querySelector('#carsTable tbody');
             tbody.innerHTML = '';
-            
+
             cars.forEach(car => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${car.id}</td>
-                    <td>${car.brand}</td>
-                    <td>${car.model}</td>
-                    <td>${car.year}</td>
-                    <td>${car.price.toLocaleString()}&#8381;</td>
-                    <td>${car.color || '-'}</td>
-                    <td class="actions">
-                        <button onclick="editCar(${car.id})">Edit</button>
-                        <button onclick="deleteCar(${car.id})">Delete</button>
-                    </td>
-                `;
+                        <td>${car.id}</td>
+                        <td>${car.brand}</td>
+                        <td>${car.model}</td>
+                        <td>${car.year}</td>
+                        <td>${car.price.toLocaleString()}&#8381;</td>
+                        <td>${car.color || '-'}</td>
+                        <td class="actions">
+                            <button onclick="editCar(${car.id})">Edit</button>
+                            <button onclick="deleteCar(${car.id})">Delete</button>
+                        </td>
+                    `;
                 tbody.appendChild(row);
             });
         }
 
-        // Create new car
         async function createCar(carData) {
             try {
-                await fetch(API_URL, {
+                await fetch(CARS_API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -157,33 +425,31 @@
                     body: JSON.stringify(carData)
                 });
             } catch (error) {
-                console.error('Error creating car:', error);
+                console.error('ошибка создания автомобиля:', error);
             }
         }
 
-        // Edit car
         async function editCar(carId) {
             try {
-                const response = await fetch(`${API_URL}/${carId}`);
+                const response = await fetch(`${CARS_API_URL}/${carId}`);
                 const car = await response.json();
-                
+
                 document.getElementById('carId').value = car.id;
                 document.getElementById('brand').value = car.brand;
                 document.getElementById('model').value = car.model;
                 document.getElementById('year').value = car.year;
                 document.getElementById('price').value = car.price;
                 document.getElementById('color').value = car.color || '';
-                
+
                 currentCarId = car.id;
             } catch (error) {
-                console.error('Error editing car:', error);
+                console.error('ошибка редактирования автомобиля:', error);
             }
         }
 
-        // Update car
         async function updateCar(carId, carData) {
             try {
-                await fetch(`${API_URL}/${carId}`, {
+                await fetch(`${CARS_API_URL}/${carId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -192,34 +458,189 @@
                 });
                 currentCarId = null;
             } catch (error) {
-                console.error('Error updating car:', error);
+                console.error('ошибка обновления автомобиля:', error);
             }
         }
 
-        // Delete car
         async function deleteCar(carId) {
             if (confirm('Are you sure you want to delete this car?')) {
                 try {
-                    await fetch(`${API_URL}/${carId}`, {
+                    await fetch(`${CARS_API_URL}/${carId}`, {
                         method: 'DELETE'
                     });
                     await loadCars();
                 } catch (error) {
-                    console.error('Error deleting car:', error);
+                    console.error('ошибка удаления автомобиля:', error);
                 }
             }
         }
 
-        // Reset form
-        function resetForm() {
-            document.getElementById('carForm').reset();
-            document.getElementById('carId').value = '';
-            currentCarId = null;
+        // ===== USER FUNCTIONS =====
+
+        document.getElementById('userForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const userData = {
+                username: document.getElementById('userUsername').value,
+                email: document.getElementById('userEmail').value,
+                full_name: document.getElementById('userFullName').value,
+                role: document.getElementById('userRole').value,
+                password: document.getElementById('userPassword').value || null
+            };
+
+            if (currentUserId) {
+                await updateUser(currentUserId, userData);
+            } else {
+                await createUser(userData);
+            }
+
+            location.reload(true);
+        });
+
+        async function loadUsers() {
+            try {
+                const response = await fetch(USERS_API_URL, {
+                    headers: {
+                        'Authorization': `bearer ${currentToken}`
+                    }
+                });
+
+                if (response.status === 403) {
+                    showError('userForm', 'Нет прав на просмотр пользователей');
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить пользователя');
+                }
+
+                const users = await response.json();
+                renderUsers(users);
+            } catch (error) {
+                console.error('Не удалось загрузить пользователя:', error);
+                showError('userForm', error.message);
+            }
         }
 
-        // Make functions global for inline handlers
+        function renderUsers(users) {
+            const tbody = document.querySelector('#usersTable tbody');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.full_name}</td>
+                        <td>${user.role}</td>
+                        <td class="actions">
+                            <button onclick="editUser(${user.id})">Edit</button>
+                            <button onclick="deleteUser(${user.id})">Delete</button>
+                        </td>
+                    `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function createUser(userData) {
+            try {
+                const response = await fetch(USERS_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `bearer ${currentToken}`
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Не удалось создать пользователя');
+                }
+            } catch (error) {
+                console.error('Не удалось создать пользователя:', error);
+                showError('userForm', error.message);
+                throw error;
+            }
+        }
+
+        async function editUser(userId) {
+            try {
+                const response = await fetch(`${USERS_API_URL}/${userId}`, {
+                    headers: {
+                        'Authorization': `bearer ${currentToken}`
+                    }
+                });
+
+                if (!response.ok) return;
+
+                const user = await response.json();
+
+                document.getElementById('userId').value = user.id;
+                document.getElementById('userUsername').value = user.username;
+                document.getElementById('userEmail').value = user.email;
+                document.getElementById('userFullName').value = user.full_name;
+                document.getElementById('userRole').value = user.role;
+                document.getElementById('userPassword').value = '';
+
+                currentUserId = user.id;
+            } catch (error) {
+                console.error('Не удалось отредактировать пользователя:', error);
+            }
+        }
+
+        async function updateUser(userId, userData) {
+            try {
+                const response = await fetch(`${USERS_API_URL}/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `bearer ${currentToken}`
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Не удалось обновить пользователя');
+                }
+
+                currentUserId = null;
+            } catch (error) {
+                console.error('Не удалось обновить пользователя:', error);
+                showError('userForm', error.message);
+                throw error;
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (confirm('Вы уверены что хотите удалить текушего пользователя')) {
+                try {
+                    const response = await fetch(`${USERS_API_URL}/${userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `bearer ${currentToken}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || 'Не удалось удалить');
+                    }
+
+                    await loadUsers();
+                } catch (error) {
+                    console.error('Не удалось удалить:', error);
+                    showError('userForm', error.message);
+                }
+            }
+        }
+
         window.editCar = editCar;
         window.deleteCar = deleteCar;
+        window.editUser = editUser;
+        window.deleteUser = deleteUser;
     </script>
 </body>
 </html>
